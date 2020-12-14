@@ -1,0 +1,16 @@
+How can you improve the feature to make it more resilient against abuse/exploitation
+To make the feature resilient againt abuse and exploitation, the implementation i made exposes the like functionalities only to Authenticated and authourized users,
+while everyone that visits the article can view the article contents and article like counts, only loggedin users can like an article.
+
+How can you improve the feature to make it scale to millions of users and perform without issues?
+Improving the performance of the feature, using a cache memory is of great benefits, this reduces the load of stress on calling the database every time, in the implementation
+I made use of In memory caching, but other caching services such as Redis will greatly improve the performance of the feature.
+
+A million concurrent users clicking the button at the same time
+The issues of concurrent users was handled by having a seperate table for likes, where user can like or unlike a single article once, no duplicated data was generated for the like action in the table,
+a user can only update the status of the like of an article on the table through his unique identity, so multiple users are making separate calls that are asynchronous.
+
+A million concurrent users requesting the article's like count at the same time
+The like count of an article are not stored in the database as a constant, they are generated from the like table using a unique indentifier of the article, so the like
+count of an article is an aggreagation of all user likes of that particular article from the users table. This pattern prevent the concurrency error where the data manipulation of one user can lead to
+unwanted database update.
