@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LikeButton.Core.Constants
+﻿namespace LikeButton.Core.Constants
 {
     public static class AppConstants
     {

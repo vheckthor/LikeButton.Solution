@@ -3,9 +3,6 @@ using LikeButton.Core.Interfaces;
 using LikeButton.Core.Interfaces.IUserRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LikeButton.Infrastructure.Data.Repository.UserRepository

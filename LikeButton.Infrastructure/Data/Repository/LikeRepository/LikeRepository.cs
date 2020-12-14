@@ -9,7 +9,6 @@ using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
@@ -39,14 +38,14 @@ namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
                 var updatedLike = await CachedLikeData();
                 var newLike = await _context.Likes.SingleOrDefaultAsync(x => x.LikerUniqueId == like.LikerUniqueId &&
                 x.ArticleUniqueId == like.ArticleUniqueId);
-                newLike.LikeStatus = like.LikeStatus;
+               
 
                 var currentIndex = updatedLike.IndexOf(getLike);
                
 
                 if (getLike != null)
                 {
-
+                    newLike.LikeStatus = like.LikeStatus;
                     var check1 = _context.Entry(getLike).State;
 
                     updatedLike[currentIndex].LikeStatus = like.LikeStatus;

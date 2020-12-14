@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using LikeButton.API.Extensions;
-using LikeButton.Core.Constants;
 using LikeButton.Core.DTOs.APIRequest;
-using LikeButton.Core.DTOs.APIResponse;
 using LikeButton.Core.Helpers;
 using LikeButton.Infrastructure.Data.Repository.ArticleRepository;
-using LikeButton.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace LikeButton.API.Controllers
 {

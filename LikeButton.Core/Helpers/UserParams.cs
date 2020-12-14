@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LikeButton.Core.Helpers
 {
     public class UserParams
     {
-        private const int MaxPageSize = 6;
+        private const int MaxPageSize = 10;
         public int PageNUmber { get; set; } = 1;
         private int pageSize = 5;
         public int PageSize

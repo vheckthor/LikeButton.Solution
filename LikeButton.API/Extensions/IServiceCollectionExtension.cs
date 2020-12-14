@@ -1,14 +1,9 @@
 ﻿using LikeButton.API.Filters;
-using LikeButton.Core.Interfaces;
-using LikeButton.Infrastructure.Logger;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LikeButton.API.Extensions
 {

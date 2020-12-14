@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using LikeButton.Core.DTOs.APIRequest;
 using LikeButton.Core.Entities;
 using LikeButton.Core.Interfaces;
 using LikeButton.Core.Interfaces.IAuthenticationRepository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LikeButton.API.Controllers
 {

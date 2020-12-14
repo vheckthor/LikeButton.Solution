@@ -20,6 +20,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Description = A project that implement like features, a user can like an article and the like cont of the article is immediately updated
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1B48958-5873-46F4-9D56-9F6721071C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

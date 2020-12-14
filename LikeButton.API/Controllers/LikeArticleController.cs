@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using LikeButton.Core.DTOs.APIRequest;
 using LikeButton.Core.Entities;
@@ -10,7 +7,6 @@ using LikeButton.Core.Interfaces.ILikeRepository;
 using LikeButton.Core.Interfaces.IUserRepository;
 using LikeButton.Infrastructure.Data.Repository.ArticleRepository;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LikeButton.API.Controllers

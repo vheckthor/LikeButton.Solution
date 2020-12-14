@@ -1,8 +1,5 @@
 ﻿using LikeButton.Core.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 
 namespace LikeButton.Infrastructure.Helpers
