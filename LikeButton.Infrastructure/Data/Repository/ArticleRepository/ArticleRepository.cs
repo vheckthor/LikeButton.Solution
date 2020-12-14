@@ -44,10 +44,25 @@ namespace LikeButton.Infrastructure.Data.Repository.ArticleRepository
                     
                 };
 
+                var newUpdate = await CachedData();
+                newUpdate.Add(new GetArticleResponse
+                {
+                    ArticleLikes = 0,
+                    ArticleUniqueIdentifier = article.ArticleUniqueIdentifier,
+                    DateAdded = article.DateAdded,
+                    Body = article.Body,
+                    Description = article.Description,
+                    Title = article.Title
+
+                });
+                _cache.Set(AppConstants.CACHEKEYARTICLE, newUpdate);
+
+
                 await _context.Articles.AddAsync(article);
                 var result = await _context.SaveChangesAsync();
                 if(result > 0)
                 {
+                    
                     return true;
                 }
                 return false;
@@ -64,23 +79,9 @@ namespace LikeButton.Infrastructure.Data.Repository.ArticleRepository
         {
             try
             {
-                var result = await _context.Articles.FirstOrDefaultAsync(x => x.ArticleUniqueIdentifier == articleuniqueId);
-                var articlelikes = await _context.Likes.Select(x => x.ArticleUniqueId == articleuniqueId && x.LikeStatus == true).CountAsync();
+                var result = await CachedData();
 
-                if(result == default)
-                {
-                    return default;
-                }
-
-                return new GetArticleResponse
-                {
-                    DateAdded = result.DateAdded,
-                    ArticleUniqueIdentifier = result.ArticleUniqueIdentifier,
-                    Description = result.Description,
-                    Body = result.Body,
-                    Title = result.Title,
-                    ArticleLikes = articlelikes
-                };
+                return result.SingleOrDefault(x => x.ArticleUniqueIdentifier == articleuniqueId);
             }
             catch (Exception ex)
             {
@@ -90,34 +91,14 @@ namespace LikeButton.Infrastructure.Data.Repository.ArticleRepository
 
         }
 
-       // public async Task<PagedList<GetArticleResponse>> GetLikedArticlesAsync(UserParams param)
-        //{
-
-        //}
-        
+       
         public async Task<PagedList<GetArticleResponse>> GetArticlesAsync(UserParams param)
         {
             try 
             {
-                var cacheKey = AppConstants.CACHEKEYARTICLE;
-
-                if (!_cache.TryGetValue(cacheKey, out List<GetArticleResponse> articlesResponse))
-                {
-
-                   articlesResponse = await GetArticlesFromDbAsync();
 
 
-                    var cacheExpiration = new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpiration = DateTime.Now.AddDays
-                        (1),
-                        Priority = CacheItemPriority.Normal,
-                        SlidingExpiration = TimeSpan.FromMinutes(10)
-                    };
-
-                    _cache.Set(cacheKey, articlesResponse, cacheExpiration);
-
-                }
+                var articlesResponse =await CachedData();
 
                 return await PagedList<GetArticleResponse>.CreateAsync(articlesResponse, param.PageNUmber, param.PageSize);
             }
@@ -157,6 +138,29 @@ namespace LikeButton.Infrastructure.Data.Repository.ArticleRepository
             }
             return articlesResponse;
 
+        }
+
+        private async Task<List<GetArticleResponse>> CachedData()
+        {
+            var cacheKey = AppConstants.CACHEKEYARTICLE;
+            if (!_cache.TryGetValue(cacheKey, out List<GetArticleResponse> articlesResponse))
+            {
+
+                articlesResponse = await GetArticlesFromDbAsync() ?? new List<GetArticleResponse>();
+
+
+                var cacheExpiration = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTime.Now.AddDays
+                    (1),
+                    Priority = CacheItemPriority.Normal,
+                    SlidingExpiration = TimeSpan.FromMinutes(10)
+                };
+
+                _cache.Set(cacheKey, articlesResponse, cacheExpiration);
+
+            }
+            return articlesResponse;
         }
 
 

@@ -47,11 +47,29 @@ namespace LikeButton.Tests.Infrastructure.LikeRepositry
         public async Task ReturnNull_WhenValueNotFound__GetLikeAsync()
         {
             var _fileLoggerMock = new Mock<IFileLogger>();
-            var _cacheMock = new Mock<IMemoryCache>();
+            var mockCache = new Mock<IMemoryCache>();
+            var mockCacheEntry = new Mock<ICacheEntry>();
+
+            string keyPayload = null;
+            mockCache
+                .Setup(mc => mc.CreateEntry(It.IsAny<object>()))
+                .Callback((object k) => keyPayload = (string)k)
+                .Returns(mockCacheEntry.Object); 
+
+            object? valuePayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.Value = It.IsAny<object>())
+                .Callback<object>(v => valuePayload = v);
+
+            TimeSpan? expirationPayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.AbsoluteExpirationRelativeToNow = It.IsAny<TimeSpan?>())
+                .Callback<TimeSpan?>(dto => expirationPayload = dto);
+
             var _articleMock = new Mock<IArticleRepository>();
             AppDbContext context = DbHelpers.InitContext("TestDB");
             
-            var command = new LikeRepository(context, _fileLoggerMock.Object, _cacheMock.Object, _articleMock.Object);
+            var command = new LikeRepository(context, _fileLoggerMock.Object, mockCache.Object, _articleMock.Object);
 
             var exc = await command.GetLikeAsync(default,default);
 
@@ -62,13 +80,40 @@ namespace LikeButton.Tests.Infrastructure.LikeRepositry
         public async Task Return_Success_OnValue_Found_AddLikeAsync()
         {
             var _fileLoggerMock = new Mock<IFileLogger>();
-            var _cacheMock = new Mock<IMemoryCache>();
-            var _articleMock = new Mock<IArticleRepository>();
-            AppDbContext context = DbHelpers.InitContext("TestDB");
-                             
-            var command = new LikeRepository(context, _fileLoggerMock.Object, _cacheMock.Object, _articleMock.Object);
+           
+            var mockCache = new Mock<IMemoryCache>();
+            var mockCacheEntry = new Mock<ICacheEntry>();
 
-            var exc = await command.AddAsync(new LikeButton.Core.Entities.Like { ArticleUniqueId = Guid.NewGuid(), LikerUniqueId = Guid.Empty });
+            string? keyPayload = null;
+            mockCache
+                .Setup(mc => mc.CreateEntry(It.IsAny<object>()))
+                .Callback((object k) => keyPayload = (string)k)
+                .Returns(mockCacheEntry.Object); // this should address your null reference exception
+
+            object? valuePayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.Value = It.IsAny<object>())
+                .Callback<object>(v => valuePayload = v);
+
+            TimeSpan? expirationPayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.AbsoluteExpirationRelativeToNow = It.IsAny<TimeSpan?>())
+                .Callback<TimeSpan?>(dto => expirationPayload = dto);
+
+            var _articleMock = new Mock<IArticleRepository>();
+
+            _articleMock.Setup(x => x.GetArticlesFromDbAsync())
+                .ReturnsAsync(
+                new List<LikeButton.Core.DTOs.APIResponse.GetArticleResponse>());
+            AppDbContext context = DbHelpers.InitContext("TestDB");
+            var articleguid = Guid.NewGuid();
+            var likerguid = Guid.NewGuid();
+            context.Likes.Add(new LikeButton.Core.Entities.Like { ArticleUniqueId = articleguid, LikerUniqueId = likerguid, LikeStatus = true });
+             await context.SaveChangesAsync();
+            var command = new LikeRepository(context, _fileLoggerMock.Object, mockCache.Object, _articleMock.Object);
+
+            var exc = await command.AddAsync(new LikeButton.Core.Entities.Like { ArticleUniqueId =articleguid ,LikeStatus = false,
+                LikerUniqueId = likerguid});
           
             Assert.True(exc);
         }
@@ -77,14 +122,33 @@ namespace LikeButton.Tests.Infrastructure.LikeRepositry
         public async Task Return_False_OnUserAlready_AddLikeAsync()
         {
             var _fileLoggerMock = new Mock<IFileLogger>();
-            var _cacheMock = new Mock<IMemoryCache>();
+            
+            var mockCache = new Mock<IMemoryCache>();
+            var mockCacheEntry = new Mock<ICacheEntry>();
+
+            string? keyPayload = null;
+            mockCache
+                .Setup(mc => mc.CreateEntry(It.IsAny<object>()))
+                .Callback((object k) => keyPayload = (string)k)
+                .Returns(mockCacheEntry.Object); // this should address your null reference exception
+
+            object? valuePayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.Value = It.IsAny<object>())
+                .Callback<object>(v => valuePayload = v);
+
+            TimeSpan? expirationPayload = null;
+            mockCacheEntry
+                .SetupSet(mce => mce.AbsoluteExpirationRelativeToNow = It.IsAny<TimeSpan?>())
+                .Callback<TimeSpan?>(dto => expirationPayload = dto);
+
             var _articleMock = new Mock<IArticleRepository>();
             AppDbContext context = DbHelpers.InitContext("TestDB");
 
             await context.Likes.AddAsync(new LikeButton.Core.Entities.Like { ArticleUniqueId = Guid.Empty, LikerUniqueId = Guid.Empty });
             var saved = await context.SaveChangesAsync() > 0;
             Assert.True(saved);
-            var command = new LikeRepository(context, _fileLoggerMock.Object, _cacheMock.Object, _articleMock.Object);
+            var command = new LikeRepository(context, _fileLoggerMock.Object, mockCache.Object, _articleMock.Object);
 
             var exc = await command.AddAsync(new LikeButton.Core.Entities.Like { ArticleUniqueId = Guid.Empty, LikerUniqueId = Guid.Empty });
           

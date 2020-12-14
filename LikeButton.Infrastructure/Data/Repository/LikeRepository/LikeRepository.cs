@@ -36,20 +36,40 @@ namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
             {
 
                 var getLike =await  GetLikeAsync(like.LikerUniqueId, like.ArticleUniqueId);
+                var updatedLike = await CachedLikeData();
+                var newLike = await _context.Likes.SingleOrDefaultAsync(x => x.LikerUniqueId == like.LikerUniqueId &&
+                x.ArticleUniqueId == like.ArticleUniqueId);
+                newLike.LikeStatus = like.LikeStatus;
+
+                var currentIndex = updatedLike.IndexOf(getLike);
+               
+
                 if (getLike != null)
                 {
-                    getLike.LikeStatus = like.LikeStatus;
 
+                    var check1 = _context.Entry(getLike).State;
+
+                    updatedLike[currentIndex].LikeStatus = like.LikeStatus;
+                    _cache.Set(AppConstants.CACHEKEYLIKE, updatedLike);
+                    var check = _context.Entry(getLike).State;
+
+                   
                 }
                 else
                 {
-                    _context.Likes.Add(like);
+                    var res = _context.Likes.Add(like);
+                    
+
                 }
                 var response = await _context.SaveChangesAsync() > 0;
                 if (response) 
                 {
-                    var newList = new List<GetArticleResponse>();
-                    var updateCache =await _cache.Set(AppConstants.CACHEKEYARTICLE, _articleRepo.GetArticlesFromDbAsync());
+                    updatedLike = await _context.Likes.ToListAsync();
+                   var newList = await _articleRepo.GetArticlesFromDbAsync() ?? new List<GetArticleResponse>();
+                    
+                    _cache.Set(AppConstants.CACHEKEYLIKE, updatedLike);
+
+                    _cache.Set(AppConstants.CACHEKEYARTICLE, newList);
                 }
                 return response;
             }
@@ -66,8 +86,9 @@ namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
         public async Task<int> GetArticleLikesCountAsync(Guid articleUniqueId)
         {
             try
-            {  
-                return  await _context.Likes.Select(x => x.ArticleUniqueId == articleUniqueId && x.LikeStatus == true).CountAsync();
+            {
+                var likeResponse = await CachedLikeData();
+                return  likeResponse.Select(x => x.ArticleUniqueId == articleUniqueId && x.LikeStatus == true).Count();
 
             }
             catch (Exception ex)
@@ -85,7 +106,10 @@ namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
 
             try
             {
-                return await _context.Likes.SingleOrDefaultAsync(x => x.ArticleUniqueId == articleUniqueId
+
+                var LikesResponse = await CachedLikeData();
+                
+                return  LikesResponse.SingleOrDefault(x => x.ArticleUniqueId == articleUniqueId
                 && x.LikerUniqueId == userUniqueId);
             }
             catch (Exception ex)
@@ -94,6 +118,32 @@ namespace LikeButton.Infrastructure.Data.Repository.LikeRepository
                 return default;
             }
 
+        }
+
+
+        private async Task<List<Like>> CachedLikeData()
+        {
+            var cacheKey = AppConstants.CACHEKEYLIKE;
+
+            if (!_cache.TryGetValue(cacheKey, out List<Like> LikesResponse))
+            {
+
+                LikesResponse = await _context.Likes.ToListAsync();
+
+
+                var cacheExpiration = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpiration = DateTime.Now.AddDays
+                    (1),
+                    Priority = CacheItemPriority.Normal,
+                    SlidingExpiration = TimeSpan.FromMinutes(10)
+                };
+
+                _cache.Set(cacheKey, LikesResponse, cacheExpiration);
+
+            }
+
+            return LikesResponse;
         }
     }
 }
