@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LikeButton.API", "LikeButton.Solution\LikeButton.API.csproj", "{B1B48958-5873-46F4-9D56-9F6721071C7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LikeButton.API", "LikeButton.API\LikeButton.API.csproj", "{B1B48958-5873-46F4-9D56-9F6721071C7E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LikeButton.Core", "LikeButton.Core\LikeButton.Core.csproj", "{ED490D12-64FF-48AB-B592-F7FBADCED2BC}"
 EndProject

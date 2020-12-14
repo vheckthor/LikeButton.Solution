@@ -19,7 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LikeButton.Core\LikeButton.Core.csproj" />
     <ProjectReference Include="..\LikeButton.Infrastructure\LikeButton.Infrastructure.csproj" />
-    <ProjectReference Include="..\LikeButton.Solution\LikeButton.API.csproj" />
+    <ProjectReference Include="..\LikeButton.API\LikeButton.API.csproj" />
   </ItemGroup>
 
 </Project>

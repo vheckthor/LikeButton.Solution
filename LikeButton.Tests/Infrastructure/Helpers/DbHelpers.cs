@@ -16,8 +16,7 @@ namespace LikeButton.Tests.Infrastructure.Helpers
         {
             var builder = new DbContextOptionsBuilder<AppDbContext>();
 
-            builder.UseInMemoryDatabase(DBName) // doesn't suport transactions and sql statement , use InitContextWithTransactionAndSQLSupport
-                                                // Don't raise the error warning us that the in memory db doesn't support transactions
+            builder.UseInMemoryDatabase(DBName) 
                    .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
 
             return new AppDbContext(builder.Options);
@@ -39,59 +38,5 @@ namespace LikeButton.Tests.Infrastructure.Helpers
         }
 
 
-        public static void DetachAllEntities(AppDbContext context)
-        {
-            var changedEntriesCopy = context.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added ||
-                            e.State == EntityState.Modified ||
-                            e.State == EntityState.Deleted)
-                .ToList();
-
-            foreach (var entry in changedEntriesCopy)
-                entry.State = EntityState.Detached;
-        }
-
-        public static int NumberOfTrackedEntities(AppDbContext context)
-        {
-            return context.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added ||
-                            e.State == EntityState.Modified ||
-                            e.State == EntityState.Deleted ||
-                            e.State == EntityState.Unchanged)
-                .Count();
-
-        }
-
-
-        public static int NumberOfEntitiesWithAddedEntityState(AppDbContext context)
-        {
-            return context.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added)
-                .Count();
-        }
-
-        public static IList<T> AddedEntities<T>(AppDbContext context) where T : class
-        {
-            return context.ChangeTracker.Entries<T>()
-                .Where(e => e.State == EntityState.Added)
-                .Select(x => x.Entity)
-                .ToList();
-        }
-
-        public static IList<T> ModifiedEntities<T>(AppDbContext context) where T : class
-        {
-            return context.ChangeTracker.Entries<T>()
-                .Where(e => e.State == EntityState.Modified)
-                .Select(x => x.Entity)
-                .ToList();
-        }
-
-        public static IList<T> RemovedEntities<T>(AppDbContext context) where T : class
-        {
-            return context.ChangeTracker.Entries<T>()
-                .Where(e => e.State == EntityState.Deleted)
-                .Select(x => x.Entity)
-                .ToList();
-        }
     }
 }
